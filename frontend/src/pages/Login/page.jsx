@@ -65,8 +65,6 @@ const LoginPage = () => {
 
       Cookies.set("token", mockToken, cookieOptions);
       Cookies.set("user", JSON.stringify(mockUser), cookieOptions);
-
-      alert("Login successful!");
       navigate("/news"); // Navigate to news page after successful login
     } else {
       alert("Please enter both email and password.");
@@ -156,7 +154,7 @@ const LoginPage = () => {
               placeholder="name@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-900"
+              className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all"
               required
             />
           </div>
@@ -171,7 +169,7 @@ const LoginPage = () => {
               </label>
               <Link
                 to="/forgot-password"
-                className="text-sm text-blue-600 hover:underline"
+                className="text-sm text-gray-600 hover:text-gray-900 hover:underline transition-colors"
               >
                 Forgot password?
               </Link>
@@ -182,7 +180,7 @@ const LoginPage = () => {
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-900"
+              className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all"
               required
             />
           </div>
@@ -202,7 +200,7 @@ const LoginPage = () => {
 
           <button
             type="submit"
-            className="w-full px-4 py-2 text-white bg-blue-600 font-medium rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full px-4 py-2 text-white bg-gray-900 font-medium rounded-md hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             disabled={isLoading}
           >
             {isLoading ? "Signing in..." : "Sign In"}
@@ -224,7 +222,7 @@ const LoginPage = () => {
           <button
             type="button"
             onClick={handleGoogleSignIn}
-            className="w-full flex items-center justify-center px-4 py-2 text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200"
+            className="w-full flex items-center justify-center px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors shadow-sm"
           >
             <FcGoogle className="w-5 h-5 mr-2" />
             Sign in with Google
@@ -234,7 +232,10 @@ const LoginPage = () => {
         <div className="text-center">
           <p className="text-sm text-gray-500">
             Don't have an account?{" "}
-            <Link to="/signup" className="text-blue-600 hover:underline">
+            <Link
+              to="/signup"
+              className="text-gray-900 font-medium hover:underline transition-colors"
+            >
               Sign up
             </Link>
           </p>

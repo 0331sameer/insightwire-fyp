@@ -183,7 +183,7 @@ const SignupPage = () => {
               placeholder="John Doe"
               value={formData.name}
               onChange={handleChange}
-              className="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-900"
+              className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all"
               required
             />
           </div>
@@ -202,7 +202,7 @@ const SignupPage = () => {
               placeholder="name@example.com"
               value={formData.email}
               onChange={handleChange}
-              className="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-900"
+              className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all"
               required
             />
           </div>
@@ -221,7 +221,7 @@ const SignupPage = () => {
               placeholder="••••••••"
               value={formData.password}
               onChange={handleChange}
-              className="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-900"
+              className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all"
               required
             />
           </div>
@@ -240,14 +240,14 @@ const SignupPage = () => {
               placeholder="••••••••"
               value={formData.confirmPassword}
               onChange={handleChange}
-              className="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-900"
+              className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all"
               required
             />
           </div>
 
           <button
             type="submit"
-            className="w-full py-2 px-4 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 disabled:opacity-50"
+            className="w-full py-2 px-4 bg-gray-900 text-white rounded-md font-medium hover:bg-gray-800 disabled:opacity-50 transition-colors"
             disabled={isLoading}
           >
             {isLoading ? "Creating account..." : "Create Account"}
@@ -269,7 +269,7 @@ const SignupPage = () => {
           <button
             type="button"
             onClick={handleGoogleSignIn}
-            className="w-full flex items-center justify-center py-2 px-4 bg-gray-100 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-200"
+            className="w-full flex items-center justify-center py-2 px-4 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors shadow-sm"
           >
             <FcGoogle className="mr-2 text-xl" />
             Google
@@ -278,7 +278,10 @@ const SignupPage = () => {
 
         <div className="text-center text-sm text-gray-500">
           Already have an account?{" "}
-          <Link to="/login" className="text-blue-600 hover:underline">
+          <Link
+            to="/login"
+            className="text-gray-900 font-medium hover:underline transition-colors"
+          >
             Sign in
           </Link>
         </div>

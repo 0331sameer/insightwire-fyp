@@ -3,6 +3,9 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import CategoryFlowchart from "../../../components/CategoryFlowchart";
+import ForceDirectedGraph from "../../../components/ForceDirectedGraph";
+import Analytics from "../../../components/Analytics";
 
 const CategoryDetailPage = () => {
   const { id } = useParams();
@@ -29,18 +32,24 @@ const CategoryDetailPage = () => {
   const [comment, setComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [user, setUser] = useState(null);
+  const [categoryHierarchy, setCategoryHierarchy] = useState([]);
+  const [graphData, setGraphData] = useState({ nodes: [], links: [] });
+  const [fullCategoryData, setFullCategoryData] = useState(null);
 
   useEffect(() => {
     fetchCategoryDetails();
     fetchCategoryArticles();
     checkSavedStatus();
     fetchFeedback();
+    fetchFullCategoryData();
     // Get user from cookies
     const userCookie = Cookies.get("user");
     if (userCookie) {
       try {
         setUser(JSON.parse(userCookie));
-      } catch {}
+      } catch (error) {
+        console.error("Error parsing user cookie:", error);
+      }
     }
   }, [id, biasFilter, currentPage]);
 
@@ -209,6 +218,79 @@ const CategoryDetailPage = () => {
     } finally {
       setFeedbackLoading(false);
     }
+  };
+
+  const fetchFullCategoryData = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/categories/${id}`
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setFullCategoryData(data.data);
+        await buildCategoryHierarchy(data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching full category data:", error);
+    }
+  };
+
+  const buildCategoryHierarchy = async (currentCategory) => {
+    const hierarchy = [currentCategory];
+    const graphNodes = [
+      {
+        id: currentCategory._id,
+        title: currentCategory.title,
+        color: "#3b82f6",
+      },
+    ];
+    const graphLinks = [];
+
+    // Follow up to 3 levels of parent categories
+    let currentBg = currentCategory.Background;
+    let level = 1;
+
+    while (
+      currentBg &&
+      currentBg !== "Not" &&
+      currentBg !== "None" &&
+      level <= 3
+    ) {
+      try {
+        const response = await fetch(
+          `http://localhost:5000/api/categories/${currentBg}`
+        );
+        if (response.ok) {
+          const parentData = await response.json();
+          const parentCategory = parentData.data;
+
+          hierarchy.push(parentCategory);
+          graphNodes.push({
+            id: parentCategory._id,
+            title: parentCategory.title,
+            color:
+              level === 1 ? "#10b981" : level === 2 ? "#f59e0b" : "#ef4444",
+          });
+
+          // Add link from child to parent
+          graphLinks.push({
+            source: hierarchy[level - 1]._id,
+            target: parentCategory._id,
+          });
+
+          currentBg = parentCategory.Background;
+          level++;
+        } else {
+          break;
+        }
+      } catch (error) {
+        console.error("Error fetching parent category:", error);
+        break;
+      }
+    }
+
+    setCategoryHierarchy(hierarchy); // Show current category first, then parents below
+    setGraphData({ nodes: graphNodes, links: graphLinks });
   };
 
   const handleFeedbackSubmit = async (e) => {
@@ -431,6 +513,64 @@ const CategoryDetailPage = () => {
             )}
           </button>
 
+          {/* Parent Category Button - Bottom Right */}
+          {fullCategoryData && (
+            <button
+              onClick={() => {
+                if (
+                  fullCategoryData.Background &&
+                  fullCategoryData.Background !== "Not" &&
+                  fullCategoryData.Background !== "None"
+                ) {
+                  navigate(`/category/${fullCategoryData.Background}`);
+                }
+              }}
+              disabled={
+                !fullCategoryData.Background ||
+                fullCategoryData.Background === "Not" ||
+                fullCategoryData.Background === "None"
+              }
+              title={
+                !fullCategoryData.Background ||
+                fullCategoryData.Background === "Not" ||
+                fullCategoryData.Background === "None"
+                  ? "No parent category"
+                  : "Go to parent category"
+              }
+              className={`absolute bottom-6 right-6 px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg z-50 border-2 ${
+                !fullCategoryData.Background ||
+                fullCategoryData.Background === "Not" ||
+                fullCategoryData.Background === "None"
+                  ? "bg-gray-100 text-gray-400 cursor-not-allowed pointer-events-none border-gray-200"
+                  : "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white cursor-pointer hover:shadow-xl border-indigo-500"
+              }`}
+              aria-label={
+                !fullCategoryData.Background ||
+                fullCategoryData.Background === "Not" ||
+                fullCategoryData.Background === "None"
+                  ? "No parent category"
+                  : "Navigate to parent category"
+              }
+            >
+              <div className="flex items-center space-x-2">
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M7 16l-4-4m0 0l4-4m-4 4h18"
+                  />
+                </svg>
+                <span>Parent Category</span>
+              </div>
+            </button>
+          )}
+
           <div className="absolute inset-0 flex items-center z-20">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
               <div className="max-w-3xl">
@@ -565,6 +705,40 @@ const CategoryDetailPage = () => {
                     <span>Multiple Perspectives</span>
                   </div>
                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* Analytics Section */}
+          {fullCategoryData && fullCategoryData.Analytics && (
+            <Analytics analytics={fullCategoryData.Analytics} />
+          )}
+
+          {/* Category Hierarchy Flowchart */}
+          {categoryHierarchy.length > 0 && (
+            <CategoryFlowchart categories={categoryHierarchy} />
+          )}
+
+          {/* Parent-Child Link Graph */}
+          {graphData.nodes.length > 0 && (
+            <div className="bg-white rounded-xl shadow-lg p-8 mb-8 border border-gray-100">
+              <div className="text-center mb-8">
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                  Category Relationship Graph
+                </h3>
+                <p className="text-gray-600 text-lg">
+                  Interactive visualization of parent-child relationships
+                  between categories
+                </p>
+              </div>
+              <div className="flex justify-center">
+                <ForceDirectedGraph
+                  nodes={graphData.nodes}
+                  links={graphData.links}
+                  width={700}
+                  height={450}
+                  onNodeClick={(node) => navigate(`/category/${node.id}`)}
+                />
               </div>
             </div>
           )}

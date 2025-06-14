@@ -8,6 +8,15 @@ const auth = require("../middleware/auth");
 // @access  Public
 router.get("/", categorizedArticleController.getAllCategorizedArticles);
 
+// @route   GET /api/categorized-articles/search
+// @desc    Search categorized articles by title, summary, background
+// @access  Private
+router.get(
+  "/search",
+  auth,
+  categorizedArticleController.searchCategorizedArticles
+);
+
 // @route   GET /api/categorized-articles/bias/:bias
 // @desc    Get categorized articles filtered by bias
 // @access  Public

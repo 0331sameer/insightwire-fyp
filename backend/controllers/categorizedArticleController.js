@@ -53,6 +53,146 @@ const categorizedArticleController = {
     }
   },
 
+  // Search categorized articles
+  searchCategorizedArticles: async (req, res) => {
+    try {
+      const { q, sort = "relevance", bias = "all" } = req.query;
+
+      if (!q || q.trim().length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: "Search query is required",
+        });
+      }
+
+      // Build search query
+      let searchQuery = {
+        $or: [
+          { title: { $regex: q, $options: "i" } },
+          { summary: { $regex: q, $options: "i" } },
+          { Background: { $regex: q, $options: "i" } },
+        ],
+      };
+
+      // Find categorized articles that match the search query
+      let query = CategorizedArticle.find(searchQuery).populate({
+        path: "articles",
+        model: "Article",
+        select:
+          "title url content date publication biasness score image_url articlesperscpectives artcles_categorized",
+      });
+
+      // Apply sorting
+      switch (sort) {
+        case "newest":
+          query = query.sort({ createdAt: -1 });
+          break;
+        case "oldest":
+          query = query.sort({ createdAt: 1 });
+          break;
+        case "articles":
+          // Will sort by article count after fetching
+          break;
+        case "relevance":
+        default:
+          // Default sort by relevance (MongoDB text search scoring)
+          break;
+      }
+
+      const categorizedArticles = await query;
+
+      // Map and filter the results
+      let mappedArticles = categorizedArticles.map((catArticle) => {
+        const articles = catArticle.articles.map((article) => ({
+          _id: article._id,
+          title: article.title,
+          url: article.url,
+          content: article.content,
+          date: article.date,
+          publication: article.publication,
+          bias: article.biasness,
+          score: article.score,
+          image_url: article.image_url,
+          hasPerscpectives: article.articlesperscpectives,
+          isCategorized: article.artcles_categorized,
+        }));
+
+        // Calculate bias distribution
+        const biasCount = { left: 0, center: 0, right: 0 };
+        articles.forEach((article) => {
+          const articleBias = article.bias?.toLowerCase() || "center";
+          if (biasCount.hasOwnProperty(articleBias)) {
+            biasCount[articleBias]++;
+          } else {
+            biasCount.center++;
+          }
+        });
+
+        const totalArticles = articles.length;
+        const biasDistribution = {
+          left: biasCount.left,
+          center: biasCount.center,
+          right: biasCount.right,
+          leftPercentage:
+            totalArticles > 0
+              ? Math.round((biasCount.left / totalArticles) * 100)
+              : 0,
+          centerPercentage:
+            totalArticles > 0
+              ? Math.round((biasCount.center / totalArticles) * 100)
+              : 0,
+          rightPercentage:
+            totalArticles > 0
+              ? Math.round((biasCount.right / totalArticles) * 100)
+              : 0,
+        };
+
+        return {
+          _id: catArticle._id,
+          title: catArticle.title,
+          summary: catArticle.summary,
+          image_url: catArticle.image_url,
+          Background: catArticle.Background,
+          Analytics: catArticle.Analytics,
+          createdAt: catArticle.createdAt,
+          updatedAt: catArticle.updatedAt,
+          articleCount: articles.length,
+          articles: articles,
+          biasDistribution: biasDistribution,
+        };
+      });
+
+      // Apply bias filter if specified
+      if (bias !== "all") {
+        mappedArticles = mappedArticles.filter((catArticle) => {
+          return catArticle.articles.some(
+            (article) => article.bias?.toLowerCase() === bias.toLowerCase()
+          );
+        });
+      }
+
+      // Apply article count sorting if specified
+      if (sort === "articles") {
+        mappedArticles.sort((a, b) => b.articleCount - a.articleCount);
+      }
+
+      res.status(200).json({
+        success: true,
+        count: mappedArticles.length,
+        data: mappedArticles,
+        query: q,
+        filters: { sort, bias },
+      });
+    } catch (error) {
+      console.error("Error searching categorized articles:", error);
+      res.status(500).json({
+        success: false,
+        message: "Error searching categorized articles",
+        error: error.message,
+      });
+    }
+  },
+
   // Get a single categorized article by ID with populated articles
   getCategorizedArticleById: async (req, res) => {
     try {
@@ -235,4 +375,3 @@ const categorizedArticleController = {
 };
 
 module.exports = categorizedArticleController;
- 

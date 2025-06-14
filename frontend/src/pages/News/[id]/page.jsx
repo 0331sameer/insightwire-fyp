@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
+import RelatedArticles from "../../../components/RelatedArticles";
 
 const ArticlePage = () => {
   const { id } = useParams();
@@ -96,7 +97,7 @@ const ArticlePage = () => {
     return (
       <div className="flex justify-center items-center min-h-screen bg-gray-50">
         <div className="flex flex-col items-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-600"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-gray-600"></div>
           <p className="mt-4 text-gray-600 font-medium">Loading article...</p>
         </div>
       </div>
@@ -126,7 +127,7 @@ const ArticlePage = () => {
           </h2>
           <button
             onClick={() => navigate("/news")}
-            className="mt-6 px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors transform hover:translate-y-[-2px] hover:shadow-lg"
+            className="mt-6 px-6 py-3 bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-colors transform hover:translate-y-[-2px] hover:shadow-lg"
           >
             Back to News
           </button>
@@ -136,39 +137,19 @@ const ArticlePage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <button
-          onClick={() => navigate("/news")}
-          className="mb-6 flex items-center text-blue-600 hover:text-blue-800 transition-colors group"
-        >
-          <svg
-            className="w-5 h-5 mr-2 transform group-hover:translate-x-[-2px] transition-transform"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-          Back to News
-        </button>
-
-        <article className="bg-white rounded-xl shadow-md overflow-hidden max-w-4xl mx-auto transform hover:shadow-lg transition-all duration-300">
+    <div className="min-h-screen bg-gray-50 py-16">
+      <div className="container mx-auto px-8 sm:px-12 lg:px-16 xl:px-20">
+        <article className="bg-white rounded-2xl shadow-xl overflow-hidden max-w-6xl mx-auto transform hover:shadow-2xl transition-all duration-300">
           {article.image_url && (
-            <div className="relative h-80 w-full">
+            <div className="relative h-[28rem] w-full">
               <img
                 src={article.image_url || "/placeholder.svg"}
                 alt={article.title}
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-              <div className="absolute bottom-0 left-0 p-6 w-full">
-                <div className="flex flex-wrap items-center gap-3 mb-3">
+              <div className="absolute bottom-0 left-0 p-8 w-full">
+                <div className="flex flex-wrap items-center gap-4 mb-4">
                   <span
                     className={`px-3 py-1 rounded-full text-sm font-medium border ${getBiasColor(
                       article.bias || article.biasness
@@ -187,12 +168,12 @@ const ArticlePage = () => {
             </div>
           )}
 
-          <div className="p-8">
-            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6 leading-tight">
+          <div className="p-12 sm:p-16 lg:p-20">
+            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-12 leading-tight">
               {article.title}
             </h1>
 
-            <div className="flex flex-wrap items-center gap-4 mb-8 text-sm">
+            <div className="flex flex-wrap items-center gap-8 mb-14 text-sm">
               <div className="flex items-center">
                 <svg
                   className="w-5 h-5 mr-2 text-gray-500"
@@ -231,7 +212,7 @@ const ArticlePage = () => {
 
               <div className="flex items-center">
                 <svg
-                  className="w-5 h-5 mr-2 text-blue-600"
+                  className="w-5 h-5 mr-2 text-gray-600"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -243,17 +224,17 @@ const ArticlePage = () => {
                     d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
                   />
                 </svg>
-                <span className="text-blue-600 font-medium">
+                <span className="text-gray-700 font-medium">
                   Score: {parseFloat(article.score || 0).toFixed(2)}
                 </span>
               </div>
             </div>
 
-            <div className="prose max-w-none text-gray-700 leading-relaxed mb-8">
+            <div className="prose max-w-none text-gray-700 leading-relaxed mb-16">
               {article.content ? (
                 <div className="whitespace-pre-wrap">{article.content}</div>
               ) : (
-                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
+                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-8 rounded-xl">
                   <p className="text-yellow-800">
                     Full content not available. Click the link below to read the
                     full article.
@@ -262,14 +243,14 @@ const ArticlePage = () => {
               )}
             </div>
 
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-6 border-t border-gray-200">
-              <div className="flex flex-wrap gap-3">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-8 pt-12 border-t border-gray-200">
+              <div className="flex flex-wrap gap-6">
                 <button
                   onClick={readArticle}
                   className={`flex items-center px-4 py-2 rounded-md text-white font-medium transition-all transform hover:translate-y-[-2px] hover:shadow-md ${
                     isReading
                       ? "bg-red-600 hover:bg-red-700"
-                      : "bg-green-600 hover:bg-green-700"
+                      : "bg-gray-700 hover:bg-gray-800"
                   }`}
                 >
                   <svg
@@ -299,7 +280,7 @@ const ArticlePage = () => {
 
                 <button
                   onClick={handleShowPerspectives}
-                  className="flex items-center px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-all transform hover:translate-y-[-2px] hover:shadow-md font-medium"
+                  className="flex items-center px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 transition-all transform hover:translate-y-[-2px] hover:shadow-md font-medium"
                 >
                   <svg
                     className="w-5 h-5 mr-2"
@@ -323,7 +304,7 @@ const ArticlePage = () => {
                   href={article.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center text-blue-600 hover:text-blue-800 font-medium group"
+                  className="flex items-center text-gray-700 hover:text-gray-900 font-medium group transition-colors"
                 >
                   Read Original
                   <svg
@@ -344,6 +325,9 @@ const ArticlePage = () => {
             </div>
           </div>
         </article>
+
+        {/* Related Articles Section */}
+        <RelatedArticles articleId={id} />
       </div>
     </div>
   );

@@ -12,7 +12,7 @@
     "dev:frontend": "cd frontend && npm run dev",
     "dev:backend": "cd backend && npm run dev",
     "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
-    "start:frontend": "cd frontend && npm start",
+    "start:frontend": "cd frontend && npm run dev",
     "start:backend": "cd backend && npm start",
     "build": "npm run build:frontend",
     "build:frontend": "cd frontend && npm run build",
@@ -56,5 +56,11 @@
   "bugs": {
     "url": "https://github.com/your-username/insightwire-fyp/issues"
   },
-  "homepage": "https://github.com/your-username/insightwire-fyp#readme"
+  "homepage": "https://github.com/your-username/insightwire-fyp#readme",
+  "dependencies": {
+    "d3-drag": "^3.0.0",
+    "d3-force": "^3.0.0",
+    "d3-selection": "^3.0.0",
+    "d3-zoom": "^3.0.0"
+  }
 }

@@ -327,6 +327,46 @@ app.get("/api/categories", async (req, res) => {
   }
 });
 
+// SINGLE CATEGORY DETAIL API ENDPOINT
+app.get("/api/categories/:categoryId", async (req, res) => {
+  try {
+    const categoryId = req.params.categoryId;
+
+    // Get the specific category document by ID
+    const categoryDoc = await mongoose.connection.db
+      .collection("categorizedarticles")
+      .findOne({ _id: new mongoose.Types.ObjectId(categoryId) });
+
+    if (!categoryDoc) {
+      return res.status(404).json({
+        success: false,
+        error: "Category not found",
+      });
+    }
+
+    // Map the category data
+    const mappedCategory = {
+      _id: categoryDoc._id,
+      title: categoryDoc.title || "Untitled Category",
+      summary: categoryDoc.summary || "No summary available",
+      image_url: categoryDoc.image_url || null,
+      Background: categoryDoc.Background || "Not",
+      Analytics: categoryDoc.Analytics || [],
+      articles: categoryDoc.articles || [],
+      createdAt: categoryDoc.createdAt,
+      updatedAt: categoryDoc.updatedAt,
+    };
+
+    res.json({
+      success: true,
+      data: mappedCategory,
+    });
+  } catch (error) {
+    console.error("Category detail route error:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // CATEGORY ARTICLES API ENDPOINT
 app.get("/api/categories/:categoryId/articles", async (req, res) => {
   try {

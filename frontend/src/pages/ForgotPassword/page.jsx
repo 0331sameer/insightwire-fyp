@@ -73,7 +73,10 @@ const ForgotPasswordPage = () => {
         {success ? (
           <div className="text-green-600 text-sm">
             {success} Please{" "}
-            <Link to="/login" className="text-blue-600 hover:underline">
+            <Link
+              to="/login"
+              className="text-gray-900 font-medium hover:underline transition-colors"
+            >
               sign in
             </Link>{" "}
             with your new password.
@@ -99,7 +102,7 @@ const ForgotPasswordPage = () => {
                 placeholder="name@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-900"
+                className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all"
                 required
               />
             </div>
@@ -117,7 +120,7 @@ const ForgotPasswordPage = () => {
                 placeholder="••••••••"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-900"
+                className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all"
                 required
               />
             </div>
@@ -135,14 +138,14 @@ const ForgotPasswordPage = () => {
                 placeholder="••••••••"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-900"
+                className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all"
                 required
               />
             </div>
 
             <button
               type="submit"
-              className="w-full py-2 px-4 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 disabled:opacity-50"
+              className="w-full py-2 px-4 bg-gray-900 text-white rounded-md font-medium hover:bg-gray-800 disabled:opacity-50 transition-colors"
               disabled={loading}
             >
               {loading ? "Submitting..." : "Reset Password"}
@@ -152,7 +155,10 @@ const ForgotPasswordPage = () => {
 
         <div className="text-center text-sm text-gray-500">
           Remembered your password?{" "}
-          <Link to="/login" className="text-blue-600 hover:underline">
+          <Link
+            to="/login"
+            className="text-gray-900 font-medium hover:underline transition-colors"
+          >
             Sign in
           </Link>
         </div>

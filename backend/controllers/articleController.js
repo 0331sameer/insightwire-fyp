@@ -1,4 +1,4 @@
-const { Article } = require("../models");
+const { Article, CategorizedArticle } = require("../models");
 
 // Article controller loaded
 
@@ -429,6 +429,112 @@ const articleController = {
       res.status(500).json({
         success: false,
         message: "Error fetching bias statistics",
+        error: error.message,
+      });
+    }
+  },
+
+  // Get related articles from the same category
+  getRelatedArticles: async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      // First, get the current article
+      const article = await Article.findById(id);
+
+      if (!article) {
+        return res.status(404).json({
+          success: false,
+          message: "Article not found",
+        });
+      }
+
+      // Check if the article is categorized
+      if (!article.artcles_categorized) {
+        return res.status(200).json({
+          success: true,
+          message: "This category has not yet been applied.",
+          remaining_count: 0,
+          remaining_articles: [],
+        });
+      }
+
+      // Find the categorized article that contains this article ID
+      const categorizedArticle = await CategorizedArticle.findOne({
+        articles: id,
+      }).populate({
+        path: "articles",
+        model: "Article",
+        select: "title url content date publication biasness score image_url",
+      });
+
+      if (!categorizedArticle) {
+        return res.status(200).json({
+          success: true,
+          message: "No categorized article found for this article.",
+          remaining_count: 0,
+          remaining_articles: [],
+        });
+      }
+
+      // Get remaining articles (exclude current article)
+      const remainingArticles = categorizedArticle.articles
+        .filter((relatedArticle) => relatedArticle._id.toString() !== id)
+        .map((relatedArticle) => ({
+          _id: relatedArticle._id,
+          title: relatedArticle.title,
+          url: relatedArticle.url,
+          date: relatedArticle.date,
+          publication: relatedArticle.publication,
+          bias: relatedArticle.biasness,
+          score: relatedArticle.score,
+          image_url: relatedArticle.image_url,
+          snippet: relatedArticle.content
+            ? relatedArticle.content.substring(0, 100) + "..."
+            : "No content available...",
+        }));
+
+      // Calculate bias distribution
+      const totalArticles = categorizedArticle.articles.length;
+      const biasCount = { left: 0, center: 0, right: 0 };
+
+      categorizedArticle.articles.forEach((article) => {
+        if (article.biasness && biasCount.hasOwnProperty(article.biasness)) {
+          biasCount[article.biasness]++;
+        }
+      });
+
+      const biasPercentages = {
+        left:
+          totalArticles > 0
+            ? Math.round((biasCount.left / totalArticles) * 100)
+            : 0,
+        center:
+          totalArticles > 0
+            ? Math.round((biasCount.center / totalArticles) * 100)
+            : 0,
+        right:
+          totalArticles > 0
+            ? Math.round((biasCount.right / totalArticles) * 100)
+            : 0,
+      };
+
+      res.status(200).json({
+        success: true,
+        category_id: categorizedArticle._id,
+        category_title: categorizedArticle.title,
+        category_summary: categorizedArticle.summary,
+        category_image_url: categorizedArticle.image_url,
+        article_count: totalArticles,
+        bias_percentages: biasPercentages,
+        remaining_count: remainingArticles.length,
+        remaining_articles: remainingArticles,
+      });
+    } catch (error) {
+      console.error("Error fetching related articles:", error);
+      res.status(500).json({
+        success: false,
+        message: "Error fetching related articles",
         error: error.message,
       });
     }

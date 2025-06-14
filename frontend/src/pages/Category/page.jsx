@@ -131,6 +131,9 @@ const CategoryPage = () => {
                 </div>
 
                 <div className="p-6">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2">
+                    {category.title}
+                  </h3>
                   <p className="text-gray-600 mb-6 line-clamp-2">
                     {category.summary}
                   </p>

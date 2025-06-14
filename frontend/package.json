@@ -11,6 +11,12 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.10",
+    "@types/d3": "^7.4.3",
+    "d3": "^7.9.0",
+    "d3-drag": "^3.0.0",
+    "d3-force": "^3.0.0",
+    "d3-selection": "^3.0.0",
+    "d3-zoom": "^3.0.0",
     "firebase": "^11.9.1",
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.514.0",

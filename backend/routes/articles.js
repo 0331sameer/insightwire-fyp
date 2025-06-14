@@ -47,4 +47,9 @@ router.get("/bias/:bias", articleController.getArticlesByBias);
 // @access  Public
 router.get("/:id", articleController.getArticleById);
 
+// @route   GET /api/articles/:id/related
+// @desc    Get related articles from the same category
+// @access  Public
+router.get("/:id/related", articleController.getRelatedArticles);
+
 module.exports = router;

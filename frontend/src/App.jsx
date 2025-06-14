@@ -4,6 +4,7 @@ import {
   Route,
   Navigate,
   useNavigate,
+  useLocation,
 } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
@@ -21,6 +22,18 @@ import AboutPage from "./pages/About/page.jsx";
 import CategoryPage from "./pages/Category/page.jsx";
 import CategoryDetailPage from "./pages/Category/[id]/page.jsx";
 import ProfilePage from "./pages/Profile/page.jsx";
+import SearchPage from "./pages/Search/page.jsx";
+
+// ScrollToTop Component
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+};
 
 // Main Layout Component
 const Layout = ({ children }) => {
@@ -100,7 +113,7 @@ const Layout = ({ children }) => {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header
-        className={`bg-gray-900 shadow-lg border-b border-gray-700 fixed top-0 left-0 right-0 z-40 transition-transform duration-300 ease-in-out ${
+        className={`bg-gray-900 shadow-lg border-b border-gray-700 fixed top-0 left-0 right-0 z-4100 transition-transform duration-300 ease-in-out ${
           isNavbarVisible
             ? "transform translate-y-0"
             : "transform -translate-y-full"
@@ -149,6 +162,28 @@ const Layout = ({ children }) => {
                   About
                 </a>
               </nav>
+
+              {/* Search Icon */}
+              <button
+                onClick={() => navigate("/search")}
+                className="p-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded-md transition-colors"
+                title="Search Categories"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </button>
 
               {/* User Profile Dropdown */}
               <div className="relative profile-dropdown">
@@ -480,6 +515,7 @@ const ProtectedRoute = ({ children }) => {
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<LoginPage />} />
@@ -554,6 +590,16 @@ function App() {
             <ProtectedRoute>
               <Layout>
                 <ProfilePage />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/search"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <SearchPage />
               </Layout>
             </ProtectedRoute>
           }
